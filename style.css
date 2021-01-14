@@ -1,42 +1,96 @@
+*{
+    --main:rgba(0, 0, 0, 0.3);
+}
+
 body{
-    background-color :aliceblue;
+    font-weight: bold;
+    color:rgb(214, 214, 214);
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    background: url("./ressources/bg.jpg");
 }
 
 h1{
+    padding-top: 5%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-#meteo{
-    margin-left: 30%;
-    margin-right: 30%;
+.smallImg{
+    width: 3em;
 }
 
-#blockInfo{
-    background-color: rgb(169, 169, 253);
+.flexItem{
+    margin-top: 2%;
+    margin-bottom: 2%;
+    padding-bottom: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-basis: center;
+    align-self: center;
+}
+
+#meteo{
+    padding-top: 5%;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+#todayInfo{
+    margin: 5px;
+    display: flex;
+    flex-direction:row-reverse;
 }
 
 #illustration{
-    background-color: rgb(169, 253, 201);
+    display: flex;
+    justify-content: center;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    width: 50%;
+    background-color:var(--main);
 }
 
-
-#tempInfo{
-    background-color: rgb(173, 184, 127);
+#blockInfo{
+    font-size: 2em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    background-color:var(--main);
 }
+
 
 #jourCourant{
-    background-color: rgb(184, 127, 175);
+    padding-top: 1em;
+    padding-bottom: 1em;
+    margin: 5px;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+    background-color:var(--main);
 }
 
 #semaine{
-    background-color: rgb(228, 112, 108);
+    padding-top: 1em;
+    padding-bottom: 1em;
+    margin: 5px;
+    display: flex;
+    justify-content: space-around;
+    background-color:var(--main);
 }
 
 #mainImage{
     width: 60%;
+}
+
+
+@media all and (max-width: 959px){
+
+	#meteo{
+		margin-left: 0;
+		margin-right: 0;
+	}
 }

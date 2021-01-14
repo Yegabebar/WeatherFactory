@@ -4,6 +4,36 @@ var jourCourant = document.getElementById("jourCourant");
 var semaine = document.getElementById("semaine");
 
 
+function convertUnix(t) {
+    var dt = new Date(t * 1000);
+    var hr = dt.getHours();
+    return hr;
+}
+
+function getDay(t) {
+    var dt = new Date(t * 1000);
+    var day = dt.getDay();
+
+    switch (day) {
+        case 0: day = "Lun";
+            break;
+        case 1: day = "Mar";
+            break;
+        case 2: day = "Mer";
+            break;
+        case 3: day = "Jeu";
+            break;
+        case 4: day = "Ven";
+            break;
+        case 5: day = "Sam";
+            break;
+        case 6: day = "Dim";
+            break;
+    }
+    return day;
+
+}
+
 async function recupMeteoJour(position) {
 
     var titreVille = await recupVille(position);
@@ -16,35 +46,40 @@ async function recupMeteoJour(position) {
     if (response.status != 200) {
         console.log("catch api pas bon");
     } else {
-
+        blockInfo.innerHTML = "";
+        //Variables issues de la réponse JSON
         const data = await response.json();
-
         let { current } = data;
-
         let temp = current["temp"];
         let weather = current["weather"]["0"]["main"];
 
-        let temperature = document.createElement("p");
-        let descriptionImageMeteo = document.createElement("p");
-        let nomVille = document.createElement("p");
+        //Création du div principal
+        let divDayInfo = document.createElement("div");
+        //Création des sous-div
         let imageMeteo = document.createElement("img");
+        let nomVille = document.createElement("div");
+        let temperature = document.createElement("div");
+        let descImageMeteo = document.createElement("div");
+        
 
         //ajout de l'icone correspondant à la description du temps
         let pathIcon = iconWeather(weather);
+
+        //Ecriture de valeurs dans chaque sous-div
         imageMeteo.innerHTML = '<img id = "mainImage" src ="' + pathIcon + '" alt = " ' + weather + '" />';
+        nomVille.innerHTML = '<div id="flexItem">'+titreVille+'</div>';
+        temperature.innerHTML = '<div id="flexItem">'+Math.floor(temp) + '°C</div>';
+        descImageMeteo.innerHTML = '<div id="flexItem">'+weather+'</div>';
+
+        //Insertion de chaque sous-div dans le div principal
+        divDayInfo.innerHTML = nomVille.innerHTML;
+        divDayInfo.innerHTML += temperature.innerHTML;
+        divDayInfo.innerHTML += descImageMeteo.innerHTML;
+
+        console.log(divDayInfo.innerHTML);
+        //Ajout du div principal dans la page HTML
         illustration.innerHTML = imageMeteo.innerHTML;
-
-        //ajout du nom de la ville
-        nomVille.textContent = titreVille;
-        blockInfo.innerHTML = nomVille.innerHTML;
-
-        //ajout de la température
-        temperature.textContent = Math.floor(temp) + "°C";
-        blockInfo.innerHTML += temperature.innerHTML;
-
-        //ajout de la description de la météo
-        descriptionImageMeteo.textContent = weather;
-        blockInfo.innerHTML += descriptionImageMeteo.innerHTML;
+        blockInfo.append(divDayInfo);
 
     }
 
@@ -131,9 +166,9 @@ async function recup3Heures(position) {
             temp = hourly[i]["temp"];
             var heure = convertUnix(time);
 
-            creneauH.innerHTML = "<div>" + heure + "h </div>";
+            creneauH.innerHTML = "<div class='flexItem'>" + heure + "h </div>";
             
-            creneauT.innerHTML = "<div>" + Math.floor(temp) + "°C </div>";
+            creneauT.innerHTML = "<div class='flexItem'>" + Math.floor(temp) + "°C </div>";
 
             creneau.innerHTML = creneauH.innerHTML;
             creneau.innerHTML += creneauT.innerHTML;
@@ -145,36 +180,6 @@ async function recup3Heures(position) {
 
         }
     }
-}
-
-function convertUnix(t) {
-    var dt = new Date(t * 1000);
-    var hr = dt.getHours();
-    return hr;
-}
-
-function getDay(t) {
-    var dt = new Date(t * 1000);
-    var day = dt.getDay();
-
-    switch (day) {
-        case 0: day = "Lun";
-            break;
-        case 1: day = "Mar";
-            break;
-        case 2: day = "Mer";
-            break;
-        case 3: day = "Jeu";
-            break;
-        case 4: day = "Ven";
-            break;
-        case 5: day = "Sam";
-            break;
-        case 6: day = "Dim";
-            break;
-    }
-    return day;
-
 }
 
 async function recup7Jours(position) {
@@ -216,8 +221,8 @@ async function recup7Jours(position) {
 
             console.log(pathIcon);
 
-            jourJ.innerHTML = "<div>" + day + "</div>";         
-            jourT.innerHTML = "<div>" + Math.floor(temp) + "°C </div>";
+            jourJ.innerHTML = "<div class='flexItem'>" + day + "</div>";         
+            jourT.innerHTML = "<div class='flexItem'>" + Math.floor(temp) + "°C </div>";
             jourIcon.innerHTML = '<img class = "smallImg" src ="' + pathIcon + '" alt = " ' + description + '" />';
 
             jour.innerHTML = jourJ.innerHTML;
@@ -234,58 +239,10 @@ async function recup7Jours(position) {
     }
 }
 
-
-let villeChoisie;
-
 if ("geolocation" in navigator) {
     navigator.geolocation.watchPosition((position) => {
-
         recupMeteoJour(position);
         recup3Heures(position);
         recup7Jours(position);
-
-    }, erreur, options);
-
-    var options = {
-        enableHighAccuracy: true
-    }
+    });
 }
-else {
-    villeChoisie = "Paris";
-    recevoirTemperature(villeChoisie);
-}
-
-
-
-function erreur() {
-    villeChoisie = "Paris";
-    recevoirTemperature(villeChoisie);
-}
-
-function recevoirTemperature(ville) {
-    const url = 'https://api.openweathermap.org/data/2.5/weather?q=Paris&appid=dc8c9152e8adaad0ec8bf635818c0d42&units=metric';
-
-    let requete = new XMLHttpRequest(); // Nous créons un objet qui nous permettra de faire des requêtes
-    requete.open('GET', url); // Nous récupérons juste des données
-    requete.responseType = 'json'; // Nous attendons du JSON
-    requete.send(); // Nous envoyons notre requête
-
-    // Dès qu'on reçoit une réponse, cette fonction est executée
-    requete.onload = function () {
-        if (requete.readyState === XMLHttpRequest.DONE) {
-            if (requete.status === 200) {
-                let reponse = requete.response;
-                // console.log(reponse);
-                let temperature = reponse.main.temp;
-                let ville = reponse.name;
-                // console.log(temperature);
-                document.querySelector('#temperature_label').textContent = temperature;
-                document.querySelector('#ville').textContent = ville;
-            }
-            else {
-                alert('Un problème est intervenu, merci de revenir plus tard.');
-            }
-        }
-    }
-}
-
