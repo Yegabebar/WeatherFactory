@@ -4,7 +4,7 @@ var jourCourant = document.getElementById("jourCourant");
 var semaine = document.getElementById("semaine");
 
 
-function convertUnix(t) {
+function unixTimeStampToHour(t) {
     var dt = new Date(t * 1000);
     var hr = dt.getHours();
     return hr;
@@ -12,8 +12,9 @@ function convertUnix(t) {
 
 function getDay(t) {
     var dt = new Date(t * 1000);
+    //Récupération numéro de jour
     var day = dt.getDay();
-
+    //Correspondance numéro de jour avec nom jour pour affichage ultérieur
     switch (day) {
         case 0: day = "Lun";
             break;
@@ -31,22 +32,24 @@ function getDay(t) {
             break;
     }
     return day;
-
 }
 
 async function recupMeteoJour(position) {
-
+    //Récupération du nom de la ville pour affichage
     var titreVille = await recupVille(position);
-
+    //Constrution de l'URL pour appel API
     let url = 'https://api.openweathermap.org/data/2.5/onecall?lat='
         + position.coords.latitude + '&lon='
         + position.coords.longitude + '&exclude=minutely,alerts&appid=bea2c2ef5da3e6bbecace5807f66ff95&units=metric';
 
     const response = await fetch(url);
-    if (response.status != 200) {
-        console.log("catch api pas bon");
+    if (response.status != 200) { //Si le retour n'est pas Ok, affichage erreur
+        console.log("Réponse API non OK");
     } else {
+        //Vidage de la div de la page HTML où seront insérées les données
+        //Pour éviter l'empilement de données dans les div
         blockInfo.innerHTML = "";
+
         //Variables issues de la réponse JSON
         const data = await response.json();
         let { current } = data;
@@ -76,7 +79,6 @@ async function recupMeteoJour(position) {
         divDayInfo.innerHTML += temperature.innerHTML;
         divDayInfo.innerHTML += descImageMeteo.innerHTML;
 
-        console.log(divDayInfo.innerHTML);
         //Ajout du div principal dans la page HTML
         illustration.innerHTML = imageMeteo.innerHTML;
         blockInfo.append(divDayInfo);
@@ -88,7 +90,7 @@ async function recupMeteoJour(position) {
 function iconWeather(weather) {
 
     let icon = "";
-
+    //Correspondance path image locale avec String donnée en paramètre de fonction
     switch (weather) {
         case "Clear": icon = "./ressources/svg/001-sunny.svg";
             break;
@@ -108,76 +110,73 @@ function iconWeather(weather) {
             break;
     }
 
-    console.log(icon);
-
     return icon;
 }
 
 async function recupVille(position) {
-
+    //Constrution de l'URL pour appel API et récupération nom ville
     let url = 'https://api.openweathermap.org/data/2.5/weather?lat='
         + position.coords.latitude + '&lon='
         + position.coords.longitude + '&appid=bea2c2ef5da3e6bbecace5807f66ff95&units=metric';
-
+    
+        //Récupération résultat de fonction asynchrone
     const response = await fetch(url);
 
     if (response.status != 200) {
-        console.log("catch api pas bon");
+        console.log("Réponse API non OK");
     } else {
 
         const data = await response.json();
-
         let { name } = data;
-
-        console.log("ville : " + name);
-
         return name;
-
     }
 }
 
 async function recup3Heures(position) {
-
+    //Constrution de l'URL pour appel API
     let url = 'https://api.openweathermap.org/data/2.5/onecall?lat='
         + position.coords.latitude + '&lon='
         + position.coords.longitude + '&exclude=minutely,alerts&appid=bea2c2ef5da3e6bbecace5807f66ff95&units=metric';
-
+    
+    //Récupération résultat de fonction asynchrone
     const response = await fetch(url);
 
     if (response.status != 200) {
-        console.log("catch api pas bon");
+        console.log("Réponse API non OK");
     } else {
-
+        //Récupération résultat de fonction asynchrone
         const data = await response.json();
 
         let { hourly } = data;
         let { temp } = data;
 
+        //Vidage de la div de la page HTML où seront insérées les données
         jourCourant.innerHTML = "";
 
         for (i = 1; i <= 21; i = i + 3) {
+            //Définition variables timestamp et température
+            time = hourly[i]["dt"];
+            temp = hourly[i]["temp"];
 
+            //Transformation du timestamp en valeur lisible
+            var heure = unixTimeStampToHour(time);
+
+            //Création du div principal
             var creneau = document.createElement("div");
+            //Création des sous-div
             var creneauH = document.createElement("div");
             var creneauT = document.createElement("div");
     
-
-            time = hourly[i]["dt"];
-            temp = hourly[i]["temp"];
-            var heure = convertUnix(time);
-
+            //Ecriture de valeurs dans chaque sous-div
             creneauH.innerHTML = "<div class='flexItem'>" + heure + "h </div>";
-            
             creneauT.innerHTML = "<div class='flexItem'>" + Math.floor(temp) + "°C </div>";
-
+            
+            //Insertion de chaque sous-div dans le div principal
             creneau.innerHTML = creneauH.innerHTML;
             creneau.innerHTML += creneauT.innerHTML;
-            
+
+            //Ajout du div principal dans la page HTML
             jourCourant.append(creneau);
-
-            console.log("3 heures : " + heure);
-            console.log("3 heures : " + temp);
-
         }
     }
 }
@@ -187,53 +186,48 @@ async function recup7Jours(position) {
     let url = 'https://api.openweathermap.org/data/2.5/onecall?lat='
         + position.coords.latitude + '&lon='
         + position.coords.longitude + '&exclude=minutely,alerts&appid=bea2c2ef5da3e6bbecace5807f66ff95&units=metric';
-
+    
+    //Récupération résultat de fonction asynchrone
     const response = await fetch(url);
 
     if (response.status != 200) {
         console.log("catch api pas bon");
     } else {
-
+        //Récupération résultat de fonction asynchrone
         const data = await response.json();
         let { daily } = data;
-
+        //Vidage de la div de la page HTML où seront insérées les données
         semaine.innerHTML = "";
-
 
         for (i = 0; i <= 6; i++) {
 
-            console.log(i);
-
             let pathIcon = iconWeather(description);
-
-            var jourIcon = document.createElement("img");
+            var day = daily[i]["dt"];
+            day = getDay(day);
+            var temp = daily[i]["temp"]["day"];
+            var description = daily[i]["weather"]["0"]["main"];
+            
+            //Création du div principal
             var jour = document.createElement("div"); 
+            //Création des sous-div
+            var jourIcon = document.createElement("img");
             var jourJ = document.createElement("div");        
             var jourT = document.createElement("div");
             
-    
+            console.log('Debug: '+pathIcon);
 
-            var day = daily[i]["dt"];
-            var temp = daily[i]["temp"]["day"];
-            var description = daily[i]["weather"]["0"]["main"];
-
-            day = getDay(day);
-
-            console.log(pathIcon);
-
+            //Ecriture de valeurs dans chaque sous-div
             jourJ.innerHTML = "<div class='flexItem'>" + day + "</div>";         
             jourT.innerHTML = "<div class='flexItem'>" + Math.floor(temp) + "°C </div>";
             jourIcon.innerHTML = '<img class = "smallImg" src ="' + pathIcon + '" alt = " ' + description + '" />';
 
+            //Insertion de chaque sous-div dans le div principal
             jour.innerHTML = jourJ.innerHTML;
             jour.innerHTML += jourT.innerHTML;
             jour.innerHTML += jourIcon.innerHTML;
             
+            //Ajout du div principal dans la page HTML
             semaine.append(jour);
-
-            console.log("7 jours : jours" + day);
-            console.log("7 jours : température" + temp);
-            console.log("7 jours : description météo" + description);
 
         }
     }
@@ -241,6 +235,7 @@ async function recup7Jours(position) {
 
 if ("geolocation" in navigator) {
     navigator.geolocation.watchPosition((position) => {
+        //Lancement du script dès acceptation partage de position par l'utilisateur
         recupMeteoJour(position);
         recup3Heures(position);
         recup7Jours(position);
