@@ -1,0 +1,42 @@
+body{
+    background-color :aliceblue;
+}
+
+h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#meteo{
+    margin-left: 30%;
+    margin-right: 30%;
+}
+
+#blockInfo{
+    background-color: rgb(169, 169, 253);
+}
+
+#illustration{
+    background-color: rgb(169, 253, 201);
+}
+
+
+#tempInfo{
+    background-color: rgb(173, 184, 127);
+}
+
+#jourCourant{
+    background-color: rgb(184, 127, 175);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#semaine{
+    background-color: rgb(228, 112, 108);
+}
+
+#mainImage{
+    width: 60%;
+}
