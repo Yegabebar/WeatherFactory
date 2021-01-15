@@ -56,6 +56,7 @@ async function recupMeteoJour(position) {
     //Vidage de la div de la page HTML où seront insérées les données
     //Pour éviter l'empilement de données dans les div
     blockInfo.innerHTML = "";
+    illustration.innerHTML = "";
 
     //Variables issues de la réponse JSON
     let { current } = data;
@@ -75,7 +76,10 @@ async function recupMeteoJour(position) {
     let pathIcon = iconWeather(weather);
 
     //Ecriture de valeurs dans chaque sous-div
-    imageMeteo.innerHTML = '<img id = "mainImage" src ="' + pathIcon + '" alt = " ' + weather + '" />';
+    //imageMeteo.innerHTML = '<img id = "mainImage" src ="' + pathIcon + '" alt = " ' + weather + '" />';
+    imageMeteo.setAttribute('src', pathIcon);
+    imageMeteo.setAttribute('alt', weather);
+    imageMeteo.setAttribute('id', 'mainImage');
     nomVille.innerHTML = '<div id="flexItem">'+titreVille+'</div>';
     temperature.innerHTML = '<div id="flexItem">'+Math.floor(temp) + '°C</div>';
     descImageMeteo.innerHTML = '<div id="flexItem">'+weather+'</div>';
@@ -86,14 +90,14 @@ async function recupMeteoJour(position) {
     divDayInfo.innerHTML += descImageMeteo.innerHTML;
 
     //Ajout du div principal dans la page HTML
-    illustration.innerHTML = imageMeteo.innerHTML;
+    illustration.appendChild(imageMeteo);
+    //illustration.textContent = "zergerg";
     blockInfo.append(divDayInfo);
 
 }
 
 function iconWeather(weather) {
 
-    let icon = "";
     //Correspondance path image locale avec String donnée en paramètre de fonction
     switch (weather) {
         case "Clear": icon = "./ressources/svg/001-sunny.svg";
@@ -110,7 +114,7 @@ function iconWeather(weather) {
             break;
         case "Drizzle": icon = "./ressources/svg/026-umbrella.svg";
             break;
-        case "Fog": icon = icon = "./ressources/svg/019-fog.svg";
+        case "Fog": icon = "./ressources/svg/019-fog.svg";
             break;
     }
 
@@ -185,7 +189,7 @@ async function recup7Jours(position) {
     let { daily } = data;
     //Vidage de la div de la page HTML où seront insérées les données
     semaine.innerHTML = "";
-
+    var icon;
     for (i = 0; i <= 6; i++) {
 
         let pathIcon = iconWeather(description);
@@ -206,12 +210,15 @@ async function recup7Jours(position) {
         //Ecriture de valeurs dans chaque sous-div
         jourJ.innerHTML = "<div class='flexItem'>" + day + "</div>";         
         jourT.innerHTML = "<div class='flexItem'>" + Math.floor(temp) + "°C </div>";
-        jourIcon.innerHTML = '<img class = "smallImg" src ="' + pathIcon + '" alt = " ' + description + '" />';
+        jourIcon.setAttribute('class', 'smallImg');
+        jourIcon.setAttribute('src', pathIcon);
+        jourIcon.setAttribute('alt', description);
+        //jourIcon.innerHTML = '<img class = "smallImg" src ="' + pathIcon + '" alt = " ' + description + '" />';
 
         //Insertion de chaque sous-div dans le div principal
         jour.innerHTML = jourJ.innerHTML;
         jour.innerHTML += jourT.innerHTML;
-        jour.innerHTML += jourIcon.innerHTML;
+        jour.appendChild(jourIcon);
         
         //Ajout du div principal dans la page HTML
         semaine.append(jour);
