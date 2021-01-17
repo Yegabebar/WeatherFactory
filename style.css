@@ -40,10 +40,10 @@ h1{
 #todayInfo{
     margin: 5px;
     display: flex;
-    flex-direction:row-reverse;
+    flex-direction:row;
 }
 
-#illustration{
+#currentWeatherIcon{
     display: flex;
     justify-content: center;
     padding-top: 2%;
@@ -52,7 +52,7 @@ h1{
     background-color:var(--main);
 }
 
-#blockInfo{
+#currentStatus{
     font-size: 2em;
     display: flex;
     flex-direction: column;
@@ -63,7 +63,7 @@ h1{
 }
 
 
-#jourCourant{
+#nextHours{
     padding-top: 1em;
     padding-bottom: 1em;
     margin: 5px;
@@ -73,7 +73,7 @@ h1{
     background-color:var(--main);
 }
 
-#semaine{
+#sevenDays{
     padding-top: 1em;
     padding-bottom: 1em;
     margin: 5px;
