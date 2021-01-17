@@ -1,7 +1,7 @@
-var blockInfo = document.getElementById("blockInfo");
-var illustration = document.getElementById("illustration");
-var jourCourant = document.getElementById("jourCourant");
-var semaine = document.getElementById("semaine");
+const blockInfo = document.getElementById("blockInfo");
+const illustration = document.getElementById("illustration");
+const jourCourant = document.getElementById("jourCourant");
+const semaine = document.getElementById("semaine");
 
 async function getResponse(url) {
     const response = await fetch(url);
@@ -17,83 +17,6 @@ function unixTimeStampToHour(t) {
     var dt = new Date(t * 1000);
     var hr = dt.getHours();
     return hr;
-}
-
-function getDay(t) {
-    var dt = new Date(t * 1000);
-    //Récupération numéro de jour
-    let day = dt.getDay();
-    //Correspondance numéro de jour avec nom jour pour affichage ultérieur
-    switch (day) {
-        case 0: day = "Lun";
-            break;
-        case 1: day = "Mar";
-            break;
-        case 2: day = "Mer";
-            break;
-        case 3: day = "Jeu";
-            break;
-        case 4: day = "Ven";
-            break;
-        case 5: day = "Sam";
-            break;
-        case 6: day = "Dim";
-            break;
-    }
-    return day;
-}
-
-async function recupMeteoJour(position) {
-    //Récupération du nom de la ville pour affichage
-    var titreVille = await recupVille(position);
-    //Constrution de l'URL pour appel API
-    let url = 'https://api.openweathermap.org/data/2.5/onecall?lat='
-        + position.coords.latitude + '&lon='
-        + position.coords.longitude + '&exclude=minutely,alerts&appid=bea2c2ef5da3e6bbecace5807f66ff95&units=metric';
-    
-    let data = await getResponse(url);
-    
-    //Vidage de la div de la page HTML où seront insérées les données
-    //Pour éviter l'empilement de données dans les div
-    blockInfo.innerHTML = "";
-    illustration.innerHTML = "";
-
-    //Variables issues de la réponse JSON
-    let { current } = data;
-    let temp = current["temp"];
-    let weather = current["weather"]["0"]["main"];
-
-    //Création du div principal
-    let divDayInfo = document.createElement("div");
-    //Création des sous-div
-    let imageMeteo = document.createElement("img");
-    let nomVille = document.createElement("div");
-    let temperature = document.createElement("div");
-    let descImageMeteo = document.createElement("div");
-    
-
-    //ajout de l'icone correspondant à la description du temps
-    let pathIcon = iconWeather(weather);
-
-    //Ecriture de valeurs dans chaque sous-div
-    //imageMeteo.innerHTML = '<img id = "mainImage" src ="' + pathIcon + '" alt = " ' + weather + '" />';
-    imageMeteo.setAttribute('src', pathIcon);
-    imageMeteo.setAttribute('alt', weather);
-    imageMeteo.setAttribute('id', 'mainImage');
-    nomVille.innerHTML = '<div id="flexItem">'+titreVille+'</div>';
-    temperature.innerHTML = '<div id="flexItem">'+Math.floor(temp) + '°C</div>';
-    descImageMeteo.innerHTML = '<div id="flexItem">'+weather+'</div>';
-
-    //Insertion de chaque sous-div dans le div principal
-    divDayInfo.innerHTML = nomVille.innerHTML;
-    divDayInfo.innerHTML += temperature.innerHTML;
-    divDayInfo.innerHTML += descImageMeteo.innerHTML;
-
-    //Ajout du div principal dans la page HTML
-    illustration.appendChild(imageMeteo);
-    //illustration.textContent = "zergerg";
-    blockInfo.append(divDayInfo);
-
 }
 
 function iconWeather(weather) {
@@ -121,7 +44,84 @@ function iconWeather(weather) {
     return icon;
 }
 
-async function recupVille(position) {
+function getDay(t) {
+    var dt = new Date(t * 1000);
+    //Récupération numéro de jour
+    let day = dt.getDay();
+    //Correspondance numéro de jour avec nom jour pour affichage ultérieur
+    switch (day) {
+        case 0: day = "Lun";
+            break;
+        case 1: day = "Mar";
+            break;
+        case 2: day = "Mer";
+            break;
+        case 3: day = "Jeu";
+            break;
+        case 4: day = "Ven";
+            break;
+        case 5: day = "Sam";
+            break;
+        case 6: day = "Dim";
+            break;
+    }
+    return day;
+}
+
+async function getDailyWeather(position) {
+    //Récupération du nom de la ville pour affichage
+    var titreVille = await getCityName(position);
+    //Constrution de l'URL pour appel API
+    let url = 'https://api.openweathermap.org/data/2.5/onecall?lat='
+        + position.coords.latitude + '&lon='
+        + position.coords.longitude + '&exclude=minutely,alerts&appid=bea2c2ef5da3e6bbecace5807f66ff95&units=metric';
+    
+    let data = await getResponse(url);
+    
+    //Vidage de la div de la page HTML où seront insérées les données
+    //Pour éviter l'empilement de données dans les div
+    blockInfo.innerHTML = "";
+    illustration.innerHTML = "";
+
+    //Variables issues de la réponse JSON
+    let { current } = data;
+    let temp = current["temp"];
+    let weather = current["weather"]["0"]["main"];
+
+    //Création du div principal
+    const divDayInfo = document.createElement("div");
+    //Création des sous-div
+    const imageMeteo = document.createElement("img");
+    const nomVille = document.createElement("div");
+    const temperature = document.createElement("div");
+    const descImageMeteo = document.createElement("div");
+    
+
+    //ajout de l'icone correspondant à la description du temps
+    const pathIcon = iconWeather(weather);
+
+    //Ecriture de valeurs dans chaque sous-div
+    //imageMeteo.innerHTML = '<img id = "mainImage" src ="' + pathIcon + '" alt = " ' + weather + '" />';
+    imageMeteo.setAttribute('src', pathIcon);
+    imageMeteo.setAttribute('alt', weather);
+    imageMeteo.setAttribute('id', 'mainImage');
+    nomVille.innerHTML = '<div id="flexItem">'+titreVille+'</div>';
+    temperature.innerHTML = '<div id="flexItem">'+Math.floor(temp) + '°C</div>';
+    descImageMeteo.innerHTML = '<div id="flexItem">'+weather+'</div>';
+
+    //Insertion de chaque sous-div dans le div principal
+    divDayInfo.innerHTML = nomVille.innerHTML;
+    divDayInfo.innerHTML += temperature.innerHTML;
+    divDayInfo.innerHTML += descImageMeteo.innerHTML;
+
+    //Ajout du div principal dans la page HTML
+    illustration.appendChild(imageMeteo);
+    //illustration.textContent = "zergerg";
+    blockInfo.append(divDayInfo);
+
+}
+
+async function getCityName(position) {
     //Constrution de l'URL pour appel API et récupération nom ville
     let url = 'https://api.openweathermap.org/data/2.5/weather?lat='
         + position.coords.latitude + '&lon='
@@ -143,8 +143,8 @@ async function recup3Heures(position) {
     //Récupération résultat de fonction asynchrone
     data = await getResponse(url);
     //Récupération des valeurs dans la réponse JSON
-    let { hourly } = data;
-    let { temp } = data;
+    let {hourly, temp} = data;
+
 
     //Vidage de la div de la page HTML où seront insérées les données
     jourCourant.innerHTML = "";
@@ -155,13 +155,13 @@ async function recup3Heures(position) {
         temp = hourly[i]["temp"];
 
         //Transformation du timestamp en valeur lisible
-        var heure = unixTimeStampToHour(time);
+        const heure = unixTimeStampToHour(time);
 
         //Création du div principal
-        var creneau = document.createElement("div");
+        const creneau = document.createElement("div");
         //Création des sous-div
-        var creneauH = document.createElement("div");
-        var creneauT = document.createElement("div");
+        const creneauH = document.createElement("div");
+        const creneauT = document.createElement("div");
 
         //Ecriture de valeurs dans chaque sous-div
         creneauH.innerHTML = "<div class='flexItem'>" + heure + "h </div>";
@@ -186,7 +186,7 @@ async function recup7Jours(position) {
     //Récupération résultat de fonction asynchrone
     data = await getResponse(url);
     //Récupération des valeurs dans la réponse JSON
-    let { daily } = data;
+    let {daily} = data;
     //Vidage de la div de la page HTML où seront insérées les données
     semaine.innerHTML = "";
     var icon;
@@ -230,7 +230,7 @@ if ("geolocation" in navigator) {
     navigator.geolocation.watchPosition((position) => {
         var data;
         //Lancement du script dès acceptation partage de position par l'utilisateur
-        recupMeteoJour(position);
+        getDailyWeather(position);
         recup3Heures(position);
         recup7Jours(position);
     });
